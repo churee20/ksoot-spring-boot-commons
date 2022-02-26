@@ -1,0 +1,260 @@
+{
+	"properties": [
+		{
+			"name": "application.pagination.enabled",
+			"type": "java.lang.Boolean",
+			"description": "Default: false </br>Whether or not to enable Pagination"
+		},
+		{
+			"name": "application.pagination.first-and-last-rels",
+			"type": "java.lang.Boolean",
+			"description": "Default: false </br>Whether or not to force First and Last page's link in case of single page result set"
+		},
+		{
+			"name": "application.pagination.default-page-size",
+			"type": "java.lang.Integer",
+			"description": "Default: 16 </br>Default page size"
+		},
+		{
+			"name": "application.pagination.max-page-size",
+			"type": "java.lang.Integer",
+			"description": "Default: 2000 </br>Maximum page size to refrain any memory issues"
+		},
+		{
+			"name": "application.pagination.page-param-name",
+			"type": "java.lang.String",
+			"description": "Default: page </br>Page number request parameter name"
+		},
+		{
+			"name": "application.pagination.page-param-description",
+			"type": "java.lang.String",
+			"description": "Description of page parameter name visible in swagger"
+		},
+		{
+			"name": "application.pagination.size-param-name",
+			"type": "java.lang.String",
+			"description": "Default: size </br>Page size request parameter name"
+		},
+		{
+			"name": "application.pagination.size-param-description",
+			"type": "java.lang.String",
+			"description": "Page size request parameter description visible in swagger"
+		},
+		{
+			"name": "application.pagination.sort-param-name",
+			"type": "java.lang.String",
+			"description": "Default: sort </br>Sort request parameter name"
+		},
+		{
+			"name": "application.pagination.sort-param-description",
+			"type": "java.lang.String",
+			"description": "Sort request parameter description visible in swagger"
+		},
+		{
+			"name": "application.cors.allowed-origin-patterns",
+			"type": "java.util.List<java.lang.String>",
+			"description": "Alternative to allowed-origins that supports origins declared via wildcard patterns"
+		},
+		{
+			"name": "application.cors.allowed-origins",
+			"type": "java.util.List<java.lang.String>",
+			"description": "The list of origins for which cross-origin requests are allowed. </br>Values may be a specific domain, or the CORS defined special value '*' for all origins"
+		},
+		{
+			"name": "application.cors.allowed-methods",
+			"type": "java.util.List<java.lang.String>",
+			"description": "The list of the HTTP methods to allow, e.g. 'GET', 'POST' etc."
+		},
+		{
+			"name": "application.cors.allowed-headers",
+			"type": "java.util.List<java.lang.String>",
+			"description": "The list of headers that a pre-flight request can list as allowed for use during an actual request. </br>The special value '*' allows actual requests to send any header."
+		},
+		{
+			"name": "application.cors.exposed-headers",
+			"type": "java.util.List<java.lang.String>",
+			"description": "The list of response headers other than simple headers </br>i.e. 'Cache-Control', 'Content-Language', 'Content-Type', 'Expires', 'Last-Modified', or 'Pragma' that an actual response might have and can be exposed."
+		},
+		{
+			"name": "application.cors.allow-credentials",
+			"type": "java.lang.Boolean",
+			"description": "Whether user credentials are supported. </br>By default this is not set (i.e. user credentials are not supported)."
+		},
+		{
+			"name": "application.cors.max-age",
+			"type": "java.lang.String",
+			"description": "How long, as a duration, the response from a pre-flight request can be cached by clients. </br>In numeric format such as 1800 or java.time.Duration format such as 10s"
+		},
+		{
+			"name": "application.swagger.enabled",
+			"type": "java.lang.Boolean",
+			"description": "Whether or not to enable Swagger"
+		},
+		{
+			"name": "application.swagger.title",
+			"type": "java.lang.String",
+			"description": "API title"
+		},
+		{
+			"name": "application.swagger.description",
+			"type": "java.lang.String",
+			"description": "API description"
+		},
+		{
+			"name": "application.swagger.version",
+			"type": "java.lang.String",
+			"description": "API version"
+		},
+		{
+			"name": "application.swagger.terms-of-service-url",
+			"type": "java.lang.String",
+			"description": "API terms and conditions"
+		},
+		{
+			"name": "application.swagger.contact-name",
+			"type": "java.lang.String",
+			"description": "API contact name"
+		},
+		{
+			"name": "application.swagger.contact-url",
+			"type": "java.lang.String",
+			"description": "API contact url"
+		},
+		{
+			"name": "application.swagger.contact-email",
+			"type": "java.lang.String",
+			"description": "API contact email id"
+		},
+		{
+			"name": "application.swagger.license",
+			"type": "java.lang.String",
+			"description": "API license"
+		},
+		{
+			"name": "application.swagger.license-url",
+			"type": "java.lang.String",
+			"description": "API license URL"
+		},
+		{
+			"name": "application.swagger.use-default-response-messages",
+			"type": "java.lang.String",
+			"description": "Whether or not to use default response messages in Swagger"
+		},
+		{
+			"name": "application.swagger.host",
+			"type": "java.lang.String",
+			"description": "API host"
+		},
+		{
+			"name": "application.swagger.protocols",
+			"type": "java.util.List<java.lang.String>",
+			"description": "List of protocols: HTTP, HTTPS"
+		},
+		{
+			"name": "application.swagger.default-group.enabled",
+			"type": "java.lang.String",
+			"description": "Whether or not to create Docket for default group"
+		},
+		{
+			"name": "application.swagger.default-group.name",
+			"type": "java.lang.String",
+			"description": "Name of default group Docket"
+		},
+		{
+			"name": "application.swagger.default-group.inclusion-pattern",
+			"type": "java.util.List<java.lang.String>",
+			"description": "A List of patterns for APIs to be included in default group"
+		},
+		{
+			"name": "application.swagger.default-group.exclusion-pattern",
+			"type": "java.util.List<java.lang.String>",
+			"description": "A List of patterns for APIs to be excluded from default group"
+		},
+		{
+			"name": "application.problem.enabled",
+			"type": "java.lang.Boolean",
+			"description": "Whether or not to enable Problem handling"
+		},
+		{
+			"name": "application.problem.debug-info",
+			"type": "java.lang.Boolean",
+			"description": "Whether or not to include debug-info such as stacktrace and message codes etc. in exception response messages"
+		},
+		{
+			"name": "application.security.enabled",
+			"type": "java.lang.Boolean",
+			"description": "Whether or not to enable security"
+		},
+		{
+			"name": "application.security.unsecured-uris",
+			"type": "java.util.List<java.lang.String>",
+			"description": "A List of URI patterns to be excluded from security i.e. making them unsecured"
+		},
+		{
+			"name": "application.email.enabled",
+			"type": "java.lang.String",
+			"description": "Whether or not to enable emails"
+		},
+		{
+			"name": "application.email.templates-location",
+			"type": "java.lang.String",
+			"description": "Thymeleaf templates location"
+		},
+		{
+			"name": "application.email.reply-to",
+			"type": "java.lang.String",
+			"description": "\"Reply to\" email address"
+		},
+		{
+			"name": "application.email.validate-addresses",
+			"type": "java.lang.String",
+			"description": "Whether or not to validate email addresses"
+		}
+	],
+	"hints": [
+		{
+			"name": "application.cors.allowed-headers",
+			"values": [
+				{
+					"value": "*"
+				},
+				{
+					"value": "GET"
+				},
+				{
+					"value": "HEAD"
+				},
+				{
+					"value": "POST"
+				},
+				{
+					"value": "PUT"
+				},
+				{
+					"value": "PATCH"
+				},
+				{
+					"value": "DELETE"
+				},
+				{
+					"value": "OPTIONS"
+				},
+				{
+					"value": "TRACE"
+				}
+			]
+		},
+		{
+			"name": "application.swagger.protocols",
+			"values": [
+				{
+					"value": "HTTP"
+				},
+				{
+					"value": "HTTPS"
+				}
+			]
+		}
+	]
+}
+

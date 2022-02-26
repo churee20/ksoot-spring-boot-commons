@@ -1,0 +1,15 @@
+org.springframework.boot.env.EnvironmentPostProcessor=\
+com.ksoot.common.boot.DefaultPropertiesEnvironmentPostProcessor
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.ksoot.common.boot.config.JacksonAutoConfiguration,\
+com.ksoot.common.boot.config.swagger.SwaggerAutoConfiguration,\
+com.ksoot.common.boot.config.swagger.ReactriveSwaggerAutoConfiguration,\
+com.ksoot.common.boot.config.pagination.PaginationAutoConfiguration,\
+com.ksoot.common.boot.config.error.ProblemAutoConfiguration,\
+com.ksoot.common.boot.config.error.reactive.ReactiveProblemAutoConfiguration,\
+com.ksoot.common.boot.config.DefaultBeanRegistry,\
+com.ksoot.common.boot.config.CommonComponentsAutoConfiguration,\
+com.ksoot.common.boot.config.security.SecurityConfiguration,\
+com.ksoot.common.boot.config.web.WebConfigurer,\
+com.ksoot.common.boot.config.security.ReactiveSecurityConfiguration,\
+com.ksoot.common.boot.config.web.ReactiveWebConfigurer

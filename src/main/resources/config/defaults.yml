@@ -1,0 +1,261 @@
+
+# ===================================================================
+# Spring Boot configuration.
+#
+# This configuration will be overridden by the Spring profile you use,
+# for example application-dev.yml if you use the "dev" profile.
+#
+# ===================================================================
+
+# ===================================================================
+# Standard Spring Boot properties.
+# Full reference is available at:
+# http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
+# ===================================================================
+# set -Dspring.profiles.active=<dev|sit|int> as JVM argument to run in desired profile
+# If no profile is specified explicitly, application will fall back to default profile, which is "local"
+
+logging:
+    #file:
+        #path: logs
+        #name: ${logging.file.path}/application.log
+        #clean-history-on-start: true
+    level:
+        ROOT: info
+debug: false
+
+management:
+    endpoints:
+        web:
+            exposure:
+                include: "*"
+    info:
+        git:
+            mode: full
+
+spring:
+    #profiles:
+        #active: local
+        #include:
+            #- feature-1
+    #application:
+        #name: application-name  
+    devtools: 
+        add-properties: false
+        restart: 
+            enabled: false
+            exclude: logs/*,application.log,*.log,*.log.*
+    jmx:
+        enabled: false  
+    # You might wanna enable Keycloak security, cache and Cloud Config later on
+    cache:
+        type: NONE
+    autoconfigure:
+        exclude: 
+            #- org.keycloak.adapters.springboot.KeycloakAutoConfiguration  
+            - org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
+            - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+            - org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration
+            - org.springframework.boot.autoconfigure.admin.SpringApplicationAdminJmxAutoConfiguration
+            - org.springframework.cloud.openfeign.hateoas.FeignHalAutoConfiguration
+            - org.springframework.cloud.configuration.CompatibilityVerifierAutoConfiguration
+    datasource:
+        name: datasource
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+        #url: jdbc:sqlserver://localhost;databaseName=db_name
+        #username: sa
+        #password: admin
+        hikari:
+            pool-name: app-connection-pool
+            maximum-pool-size: 100
+            minimum-idle: 20
+    jpa:
+        open-in-view: false
+        #show-sql: false
+        database-platform: org.hibernate.dialect.SQLServer2012Dialect
+        database: sql-server
+        hibernate:
+            ddl-auto: validate
+            naming:
+                physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+                implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+        properties:
+            '[hibernate.dialect]': org.hibernate.dialect.PostgreSQLDialect
+            '[hibernate.id.new_generator_mappings]': true
+            '[hibernate.show_sql]': false
+            '[hibernate.format_sql]': true
+            '[hibernate.use_sql_comments]': true
+            '[hibernate.jdbc.time_zone]': UTC
+            '[hibernate.integration.envers.enabled]': false
+            '[org.hibernate.envers.store_data_at_delete]': true
+            #'[hibernate.cache.use_second_level_cache]': false
+            #'[hibernate.cache.use_query_cache]': false
+            #'[hibernate.cache.region.factory_class]': XXXXXX
+    flyway:
+        enabled: false
+        baseline-on-migrate: false
+        #out-of-order: false
+        #locations:
+        #    - db/migration
+    messages:
+        basename: i18n/messages,i18n/errors
+        cache-duration: PT10S # 10 second, see the ISO 8601 standard
+        fallback-to-system-locale: true
+        always-use-message-format: false
+        use-code-as-default-message: false      
+    main:
+        log-startup-info: true
+    # Highest priority (only lower that VM args), override from application.yml 
+    config:
+        import: 
+            #- classpath:/config/default.properties
+            #- classpath:/config/override.properties
+    task:
+        execution:
+            thread-name-prefix: app-task-executor-
+            pool:
+                core-size: 4
+                max-size: 16
+                queue-capacity: 1000
+                keep-alive: "10s"    
+    jackson:
+        date-format: yyyy-MM-dd HH:mm:ss
+        #time-zone:
+        #locale: 
+        #property-naming-strategy: 
+        serialization:
+            write-dates-with-zone-id: true
+            write-dates-as-timestamps: false
+    ###### Couchbase configurations ######
+    #couchbase:
+        #connection-string: ${COUCHBASE_HOST}
+        #username: ${COUCHBASE_USERNAME}
+        #password: ${COUCHBASE_PASSWORD}
+    #data:
+        #couchbase:
+            #auto-index: true
+            #bucket-name: ${COUCHBASE_BUCKET_NAME}
+            
+    #hateoas:
+        #use-hal-as-default-json-media-type: false
+    #webflux:
+        #base-path: hammer
+
+    mvc:
+        throw-exception-if-no-handler-found: true    
+        servlet:
+            load-on-startup: 1
+    web:
+        resources:
+            add-mappings: false
+            
+#cloud:
+    #aws:
+        #credentials:
+            #access-key: ${AWS_ACCESS_KEY_ID}
+            #secret-key: ${AWS_SECRET_ACCESS_KEY}
+        #region:
+            #static: ${AWS_REGION}
+        #sqs:
+            #enabled: true
+            #endpoint: ${AWS_SQS_ENDPOINT}
+            #region: ${SQS_REGION:${cloud.aws.region.static}}
+        #sns: 
+            #enabled: true   
+            #endpoint: ${AWS_SNS_ENDPOINT}
+            #region: ${SNS_REGION:${cloud.aws.region.static}}
+        #dynamodb:
+            #endpoint: ${AWS_DYNAMODB_ENDPOINT}
+            #region: ${DYNAMODB_REGION:${cloud.aws.region.static}}
+            #repository-package : com.ksoot
+            
+server:
+    forward-headers-strategy: framework
+    port: 8080
+    servlet:
+        #context-path: ksoot        
+        session:
+            cookie:
+                secure: true
+                
+    # Configure following to enable email sending
+    #mail:
+        #host: smtp.gmail.com
+        #port: 587
+        #username: user1
+        #password: "]3QJ>]7-.pnb!):Z"
+        #protocol: smtp
+        #properties:  
+            #'mail.smtp.auth': true
+            #'mail.smtp.starttls.enable': true
+            #'mail.smtp.connectiontimeout': 5000
+            #'mail.smtp.timeout': 5000
+            #'mail.smtp.writetimeout': 5000
+
+# ===================================================================
+# Application specific properties
+# Add your own application properties here
+# ===================================================================
+
+application:
+    feign-client: 
+        logging-level: NONE
+        intercept: false
+    pagination:
+        enabled: false
+        first-and-last-rels: true
+        default-page-size: 16
+        max-page-size: 1500
+        #page-param-name: page
+        #page-param-description: Requested Page number. zero-based page index, must not be negative
+        #size-param-name: size
+        #size-param-description: Size of a page. Allowed between 1 and %d, must not be negative
+        #sort-param-name: sort
+        #sort-param-description: 'Sorting criteria in the format: property(,asc|desc).'
+    cors:
+        allowed-origin-patterns: "*"
+        allowed-origins: "*"
+        allowed-methods: "*"
+        allowed-headers: "*"
+        exposed-headers: "Authorization,Link,X-total-count,X-app-info,X-app-success,X-app-warning,X-app-error"
+        #exposed-headers: "Cache-Control,Content-Type,X-Frame-Options,X-XSS-Protection,strict-transport-security,x-content-security-policy,x-content-type-options,Authorization,Link,X-Total-Count"
+        allow-credentials: false
+        max-age: 1800
+    swagger:
+        enabled: false
+        title: ${spring.application.name} API
+        description: ${spring.application.name} API documentation
+        version: 0.0.1
+        terms-of-service-url: http://www.ksoot.com/
+        contact-name:
+        contact-url:
+        contact-email:
+        license:
+        license-url: http://www.ksoot.com/license.txt
+        use-default-response-messages: false
+        #host: 
+        #protocols:
+            #- http
+            #- https
+        default-group:
+            enabled: false
+            #name: app
+            #inclusion-pattern: 
+                #- /**
+            #exclusion-pattern:
+                #- /actuator/**
+    problem:
+        enabled: false
+        debug-info: false
+    security:
+        enabled: false
+        #unsecured-uris:
+            #- /actuator/**
+            #- /external/**
+    email:
+        enabled: false
+        templates-location: templates/
+        reply-to: 
+        validate-addresses: false
+         
