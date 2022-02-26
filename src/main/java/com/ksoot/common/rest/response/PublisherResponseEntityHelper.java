@@ -34,132 +34,132 @@ import reactor.core.publisher.Mono;
  */
 public class PublisherResponseEntityHelper {
 
-	public static <T> MessageBuilder<Mono<T>, Mono<ResponseEntity<Mono<T>>>> of(final Optional<T> body) {
-		Assert.notNull(body, "Body must not be null");
-		return of(Mono.justOrEmpty(body));
-	}
-	
-	public static <T> MessageBuilder<Mono<T>, Mono<ResponseEntity<Mono<T>>>> of(final Mono<T> body) {
-		Assert.notNull(body, "Body must not be null");
-		return body.hasElement().map(notEmpty -> new MonoResponseEntityBuilder<T>(body, HttpStatus.OK))
-				.defaultIfEmpty(new MonoResponseEntityBuilder<T>(HttpStatus.NOT_FOUND)).block();
-//		return body.map(content -> new MonoResponseEntityBuilder<T>(content, HttpStatus.OK))
-//				.defaultIfEmpty(new MonoResponseEntityBuilder<T>(HttpStatus.NOT_FOUND)).block();
-	}
-	
-	public static <T> MessageBuilder<Flux<T>, Mono<ResponseEntity<Flux<T>>>> of(final Flux<T> body) {
-		Assert.notNull(body, "Body must not be null");
-		return body.hasElements().map(notEmpty -> new FluxResponseEntityBuilder<T>(body, HttpStatus.OK))
-				.defaultIfEmpty(new FluxResponseEntityBuilder<T>(HttpStatus.NOT_FOUND)).block();
-	}
-	
-	public static <T> MessageBuilder<Mono<T>, Mono<ResponseEntity<Mono<T>>>> accepted() {
-		return new MonoResponseEntityBuilder<T>(HttpStatus.ACCEPTED);
-	}
+    public static <T> MessageBuilder<Mono<T>, Mono<ResponseEntity<Mono<T>>>> of(final Optional<T> body) {
+        Assert.notNull(body, "Body must not be null");
+        return of(Mono.justOrEmpty(body));
+    }
+    
+    public static <T> MessageBuilder<Mono<T>, Mono<ResponseEntity<Mono<T>>>> of(final Mono<T> body) {
+        Assert.notNull(body, "Body must not be null");
+        return body.hasElement().map(notEmpty -> new MonoResponseEntityBuilder<T>(body, HttpStatus.OK))
+                .defaultIfEmpty(new MonoResponseEntityBuilder<T>(HttpStatus.NOT_FOUND)).block();
+//      return body.map(content -> new MonoResponseEntityBuilder<T>(content, HttpStatus.OK))
+//              .defaultIfEmpty(new MonoResponseEntityBuilder<T>(HttpStatus.NOT_FOUND)).block();
+    }
+    
+    public static <T> MessageBuilder<Flux<T>, Mono<ResponseEntity<Flux<T>>>> of(final Flux<T> body) {
+        Assert.notNull(body, "Body must not be null");
+        return body.hasElements().map(notEmpty -> new FluxResponseEntityBuilder<T>(body, HttpStatus.OK))
+                .defaultIfEmpty(new FluxResponseEntityBuilder<T>(HttpStatus.NOT_FOUND)).block();
+    }
+    
+    public static <T> MessageBuilder<Mono<T>, Mono<ResponseEntity<Mono<T>>>> accepted() {
+        return new MonoResponseEntityBuilder<T>(HttpStatus.ACCEPTED);
+    }
 
-	public static <T> MessageBuilder<Mono<T>, Mono<ResponseEntity<Mono<T>>>> badRequest() {
-		return new MonoResponseEntityBuilder<T>(HttpStatus.BAD_REQUEST);
-	}
+    public static <T> MessageBuilder<Mono<T>, Mono<ResponseEntity<Mono<T>>>> badRequest() {
+        return new MonoResponseEntityBuilder<T>(HttpStatus.BAD_REQUEST);
+    }
 
-	public static <T> MessageBuilder<Mono<T>, Mono<ResponseEntity<Mono<T>>>> noContent() {
-		return new MonoResponseEntityBuilder<T>(HttpStatus.NO_CONTENT);
-	}
+    public static <T> MessageBuilder<Mono<T>, Mono<ResponseEntity<Mono<T>>>> noContent() {
+        return new MonoResponseEntityBuilder<T>(HttpStatus.NO_CONTENT);
+    }
 
-	public static <T> MessageBuilder<Mono<T>, Mono<ResponseEntity<Mono<T>>>> notFound() {
-		return new MonoResponseEntityBuilder<T>(HttpStatus.NOT_FOUND);
-	}
+    public static <T> MessageBuilder<Mono<T>, Mono<ResponseEntity<Mono<T>>>> notFound() {
+        return new MonoResponseEntityBuilder<T>(HttpStatus.NOT_FOUND);
+    }
 
-	public static <T> MessageBuilder<Mono<T>, Mono<ResponseEntity<Mono<T>>>> created(final URI location) {
-		return new MonoResponseEntityBuilder<T>(location);
-	}
+    public static <T> MessageBuilder<Mono<T>, Mono<ResponseEntity<Mono<T>>>> created(final URI location) {
+        return new MonoResponseEntityBuilder<T>(location);
+    }
 
-	public static <T> MessageBuilder<Mono<T>, Mono<ResponseEntity<Mono<T>>>> created(final URI location, final Mono<T> body) {
-		return new MonoResponseEntityBuilder<T>(location, body);
-	}
+    public static <T> MessageBuilder<Mono<T>, Mono<ResponseEntity<Mono<T>>>> created(final URI location, final Mono<T> body) {
+        return new MonoResponseEntityBuilder<T>(location, body);
+    }
 
-	public static <T> MessageBuilder<Mono<T>, Mono<ResponseEntity<Mono<T>>>> ok(final T resource) {
-		return new MonoResponseEntityBuilder<T>(Mono.just(resource), HttpStatus.OK);
-	}
+    public static <T> MessageBuilder<Mono<T>, Mono<ResponseEntity<Mono<T>>>> ok(final T body) {
+        return new MonoResponseEntityBuilder<T>(Mono.just(body), HttpStatus.OK);
+    }
 
-	public static <T> MessageBuilder<Mono<T>, Mono<ResponseEntity<Mono<T>>>> ok() {
-		return new MonoResponseEntityBuilder<T>(HttpStatus.OK);
-	}
+    public static <T> MessageBuilder<Mono<T>, Mono<ResponseEntity<Mono<T>>>> ok() {
+        return new MonoResponseEntityBuilder<T>(HttpStatus.OK);
+    }
 
-	public static class MonoResponseEntityBuilder<T> extends AbstractResponseBuilder<Mono<T>, Mono<ResponseEntity<Mono<T>>>> {
+    public static class MonoResponseEntityBuilder<T> extends AbstractResponseBuilder<Mono<T>, Mono<ResponseEntity<Mono<T>>>> {
 
-		private URI location;
-		
-		MonoResponseEntityBuilder(final HttpStatus status) {
-			super(status);
-		}
+        private URI location;
+        
+        MonoResponseEntityBuilder(final HttpStatus status) {
+            super(status);
+        }
 
-		MonoResponseEntityBuilder(final Mono<T> body) {
-			super(body);
-		}
+        MonoResponseEntityBuilder(final Mono<T> body) {
+            super(body);
+        }
 
-		MonoResponseEntityBuilder(final Mono<T> body, final HttpStatus status) {
-			super(body, status);
-		}
+        MonoResponseEntityBuilder(final Mono<T> body, final HttpStatus status) {
+            super(body, status);
+        }
 
-		MonoResponseEntityBuilder(final URI location) {
-			super(HttpStatus.CREATED);
-			Assert.notNull(location, "location must not be null");
-			this.location = location;
-		}
+        MonoResponseEntityBuilder(final URI location) {
+            super(HttpStatus.CREATED);
+            Assert.notNull(location, "location must not be null");
+            this.location = location;
+        }
 
-		MonoResponseEntityBuilder(final URI location, final Mono<T> body) {
-			super(body, HttpStatus.CREATED);
-			Assert.notNull(location, "location must not be null");
-			Assert.notNull(body, "body must not be null");
-			this.location = location;
-		}
+        MonoResponseEntityBuilder(final URI location, final Mono<T> body) {
+            super(body, HttpStatus.CREATED);
+            Assert.notNull(location, "location must not be null");
+            Assert.notNull(body, "body must not be null");
+            this.location = location;
+        }
 
-		@Override
-		public Mono<ResponseEntity<Mono<T>>> build() {
-			org.springframework.http.ResponseEntity.BodyBuilder bodyBuilder = ResponseEntity.status(this.status);
-			if(this.location != null) {
-				bodyBuilder.location(this.location);
-			}
-			if(this.headers != null) {
-				bodyBuilder.headers(this.headers);
-			}
-			return this.body != null ? Mono.just(bodyBuilder.body(this.body)) : Mono.just(bodyBuilder.build());
-		}
-	}
+        @Override
+        public Mono<ResponseEntity<Mono<T>>> build() {
+            org.springframework.http.ResponseEntity.BodyBuilder bodyBuilder = ResponseEntity.status(this.status);
+            if(this.location != null) {
+                bodyBuilder.location(this.location);
+            }
+            if(this.headers != null) {
+                bodyBuilder.headers(this.headers);
+            }
+            return this.body != null ? Mono.just(bodyBuilder.body(this.body)) : Mono.just(bodyBuilder.build());
+        }
+    }
 
-	public static class FluxResponseEntityBuilder<T> extends AbstractResponseBuilder<Flux<T>, Mono<ResponseEntity<Flux<T>>>> {
+    public static class FluxResponseEntityBuilder<T> extends AbstractResponseBuilder<Flux<T>, Mono<ResponseEntity<Flux<T>>>> {
 
-		private URI location;
-		
-		FluxResponseEntityBuilder(final HttpStatus status) {
-			super(status);
-		}
+        private URI location;
+        
+        FluxResponseEntityBuilder(final HttpStatus status) {
+            super(status);
+        }
 
-		FluxResponseEntityBuilder(final Flux<T> body) {
-			super(body);
-		}
+        FluxResponseEntityBuilder(final Flux<T> body) {
+            super(body);
+        }
 
-		FluxResponseEntityBuilder(final Flux<T> body, final HttpStatus status) {
-			super(body, status);
-		}
+        FluxResponseEntityBuilder(final Flux<T> body, final HttpStatus status) {
+            super(body, status);
+        }
 
-		FluxResponseEntityBuilder(final URI location) {
-			super(HttpStatus.CREATED);
-			Assert.notNull(location, "location must not be null");
-			this.location = location;
-		}
+        FluxResponseEntityBuilder(final URI location) {
+            super(HttpStatus.CREATED);
+            Assert.notNull(location, "location must not be null");
+            this.location = location;
+        }
 
-		@Override
-		public Mono<ResponseEntity<Flux<T>>> build() {
-			org.springframework.http.ResponseEntity.BodyBuilder bodyBuilder = ResponseEntity.status(this.status);
-			if(this.location != null) {
-				bodyBuilder.location(this.location);
-			}
-			if(this.headers != null) {
-				bodyBuilder.headers(this.headers);
-			}
-			return this.body != null ? Mono.just(bodyBuilder.body(this.body)) : Mono.just(bodyBuilder.build());
-		}
-	}
-	
+        @Override
+        public Mono<ResponseEntity<Flux<T>>> build() {
+            org.springframework.http.ResponseEntity.BodyBuilder bodyBuilder = ResponseEntity.status(this.status);
+            if(this.location != null) {
+                bodyBuilder.location(this.location);
+            }
+            if(this.headers != null) {
+                bodyBuilder.headers(this.headers);
+            }
+            return this.body != null ? Mono.just(bodyBuilder.body(this.body)) : Mono.just(bodyBuilder.build());
+        }
+    }
+    
 }
