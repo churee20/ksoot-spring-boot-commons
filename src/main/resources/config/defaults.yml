@@ -62,9 +62,9 @@ spring:
     datasource:
         name: datasource
         type: com.zaxxer.hikari.HikariDataSource
-        driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-        #url: jdbc:sqlserver://localhost;databaseName=db_name
-        #username: sa
+        driver-class-name: org.postgresql.Driver
+        #url: jdbc:postgresql://localhost:5432/db_name
+        #username: postgres
         #password: admin
         hikari:
             pool-name: app-connection-pool
