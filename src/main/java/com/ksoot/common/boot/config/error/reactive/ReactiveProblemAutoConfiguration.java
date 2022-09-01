@@ -19,7 +19,6 @@ package com.ksoot.common.boot.config.error.reactive;
 import static com.ksoot.common.boot.BootConstant.BeanName.PROBLEM_AUTO_CONFIGURATION_BEAN_NAME;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -29,13 +28,12 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.env.Environment;
-import org.springframework.lang.Nullable;
 import org.zalando.problem.spring.webflux.advice.ProblemHandling;
 
 import com.ksoot.common.boot.config.CommonComponentsAutoConfiguration;
+import com.ksoot.common.boot.config.error.DefaultErrorBuilder;
+import com.ksoot.common.boot.config.error.ErrorBuilder;
 import com.ksoot.common.boot.config.error.ProblemProperties;
-import com.ksoot.common.boot.config.error.db.ConstraintNameResolver;
 
 /**
  * @author Rajveer Singh
@@ -47,20 +45,20 @@ import com.ksoot.common.boot.config.error.db.ConstraintNameResolver;
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @ConditionalOnMissingBean(name = PROBLEM_AUTO_CONFIGURATION_BEAN_NAME)
 @AutoConfigureAfter(value = CommonComponentsAutoConfiguration.class)
-@Import({ ReactiveApplicationExceptionHandler.class, ReactiveSecurityExceptionHandler.class, /*
-																								 * CircuitBreakerExceptionHandler
-																								 * .class,
-																								 */
+@Import({ ReactiveApplicationExceptionHandler.class, ReactiveSecurityExceptionHandler.class,
 		ReactiveWebExceptionHandler.class })
 public class ReactiveProblemAutoConfiguration {
 
 	@ConditionalOnMissingBean(name = "problemHelper")
 	@Bean
-	public ReactiveProblemHelper problemHelper(@Value("${web-application-type}") 
-			final WebApplicationType webApplicationType,
-			final Environment env, final ProblemProperties problemProperties,
-			@Nullable final ConstraintNameResolver constraintNameResolver) {
-		return new ReactiveProblemHelper(env, problemProperties, constraintNameResolver);
+	ReactiveProblemHelper problemHelper(final ErrorBuilder errorBuilder,
+			final ProblemProperties problemProperties) {
+		return new ReactiveProblemHelper(errorBuilder, problemProperties);
 	}
-
+	
+	@ConditionalOnMissingBean(name = "errorBuilder")
+	@Bean
+	ErrorBuilder errorBuilder(@Value("${spring.webflux.base-path:}") String contextPath) {
+		return new DefaultErrorBuilder(contextPath);
+	}
 }

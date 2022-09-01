@@ -20,7 +20,6 @@ import static com.ksoot.common.boot.BootConstant.BeanName.SECURITY_EXCEPTION_HAN
 
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Conditional;
@@ -53,7 +52,6 @@ import reactor.core.publisher.Mono;
 @Conditional(SecurityExceptionAdviceConfigurationCondition.class)
 @ConditionalOnClass(value = { SecurityConfig.class, ProblemHandling.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-@ConditionalOnMissingBean(name = SECURITY_EXCEPTION_HANDLER_BEAN_NAME)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Order(value = Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice

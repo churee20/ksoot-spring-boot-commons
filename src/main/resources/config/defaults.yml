@@ -92,6 +92,15 @@ spring:
             #'[hibernate.cache.use_second_level_cache]': false
             #'[hibernate.cache.use_query_cache]': false
             #'[hibernate.cache.region.factory_class]': XXXXXX
+    data:
+        mongodb:
+            uri: ${MONGODB_URL:mongodb://localhost:27017}
+            #host: localhost
+            #port: 27017
+            #username: ${MONGODB_USERNAME}
+            #password: ${MONGODB_PASSWORD}
+            database: ${MONGODB_DATABASE}
+            auto-index-creation: true
     flyway:
         enabled: false
         baseline-on-migrate: false

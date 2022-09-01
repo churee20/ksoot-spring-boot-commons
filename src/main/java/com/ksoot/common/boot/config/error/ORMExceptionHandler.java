@@ -16,9 +16,7 @@
 
 package com.ksoot.common.boot.config.error;
 
-import static com.ksoot.common.boot.config.error.ProblemConstants.Keys.LOCALIZED_MESSAGE;
-import static com.ksoot.common.boot.config.error.ProblemConstants.Keys.MESSAGE;
-import static com.ksoot.common.boot.config.error.ProblemConstants.Keys.TIMESTAMP;
+import java.net.URI;
 
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -52,52 +50,51 @@ import com.ksoot.common.message.MessageProvider;
 @Configuration
 @EnableConfigurationProperties(ProblemProperties.class)
 @ConditionalOnProperty(prefix = "application.problem", name = "enabled", havingValue = "true")
-@ConditionalOnClass(value = { ProblemHandling.class, Database.class})
+@ConditionalOnClass(value = { ProblemHandling.class, Database.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Order(value = Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
 public class ORMExceptionHandler extends AbstractAdviceTrait {
-	
-	private static final String DATA_INTEGRITY_VIOLATION_EXCEPTION_PREFIX = "data.integrity.violation.";
+
+	private ErrorBuilder errorBuilder;
 
 	private ProblemHelper problemHelper;
 
 	private ConstraintNameResolver constraintNameResolver;
 
-	public ORMExceptionHandler(final ProblemHelper problemHelper,
+	public ORMExceptionHandler(final ErrorBuilder errorBuilder, final ProblemHelper problemHelper,
 			@Nullable final ConstraintNameResolver constraintNameResolver) {
+		this.errorBuilder = errorBuilder;
 		this.problemHelper = problemHelper;
 		this.constraintNameResolver = constraintNameResolver;
 	}
 
 	@ExceptionHandler(DataIntegrityViolationException.class)
-	public ResponseEntity<Problem> handleDataIntegrityViolationException(final DataIntegrityViolationException exception,
-			final NativeWebRequest request) {
-		if(this.constraintNameResolver == null) {
-			return this.problemHelper.create(exception, this.problemHelper.problemInstance(exception, this.problemHelper.requestUri(request)), request);
+	public ResponseEntity<Problem> handleDataIntegrityViolationException(
+			final DataIntegrityViolationException exception, final NativeWebRequest request) {
+		if (this.constraintNameResolver == null) {
+			return this.problemHelper.create(exception,
+					this.problemHelper.problemInstance(exception, this.problemHelper.requestUri(request)), request);
 		} else {
 			GeneralTitleMessageResolver titleResolver = GeneralTitleMessageResolver.DATA_INTEGRITY_VIOLATION_EXCEPTION;
-	        String exMessage = exception.getMostSpecificCause().getMessage().trim();
-	        String constraintName = this.constraintNameResolver.resolveConstraintName(exception);
-	        ProblemBuilder problemBuilder = Problem.builder().withTitle(MessageProvider.getMessage(titleResolver))
-					.withInstance(this.problemHelper.requestUri(request))
-					.withStatus(Status.INTERNAL_SERVER_ERROR)
-					.with(MESSAGE, exception.getMessage())
-					.with(LOCALIZED_MESSAGE, 
-							MessageProvider.getMessage(DATA_INTEGRITY_VIOLATION_EXCEPTION_PREFIX + constraintName, exMessage))
-					.with(TIMESTAMP, this.problemHelper.time());
+			String exMessage = exception.getMostSpecificCause().getMessage().trim();
+			String constraintName = this.constraintNameResolver.resolveConstraintName(exception);
+			URI requestUri = this.problemHelper.requestUri(request);
+			ProblemBuilder problemBuilder = this.errorBuilder.problemBuilder(MessageProvider.getMessage(titleResolver),
+					requestUri, this.errorBuilder.generateType(requestUri, "data-integrity-violation"),
+					Status.INTERNAL_SERVER_ERROR, exception.getMessage(), MessageProvider.getMessage(
+							ProblemConstants.DATA_INTEGRITY_VIOLATION_EXCEPTION_PREFIX + constraintName, exMessage));
 			this.problemHelper.addDebugInfo(problemBuilder, exception);
 			return create(exception, problemBuilder.build(), request);
 		}
 	}
-	
+
 	@ExceptionHandler(ConcurrencyFailureException.class)
 	public ResponseEntity<Problem> handleConcurrencyFailureException(final ConcurrencyFailureException exception,
 			final NativeWebRequest request) {
-		return this.problemHelper.createProblem(exception, GeneralErrorResolver.CONCURRENCY_FAILURE_EXCEPTION,
-				request);
+		return this.problemHelper.createProblem(exception, GeneralErrorResolver.CONCURRENCY_FAILURE_EXCEPTION, request);
 	}
-	
-	//TODO: Add more ORM exception handlers
+
+	// TODO: Add more ORM exception handlers
 }

@@ -62,6 +62,7 @@ import springfox.documentation.spring.web.plugins.Docket;
  * @author Rajveer Singh
  */
 @Configuration
+@ConditionalOnClass(Docket.class)
 @EnableConfigurationProperties(value = { SwaggerProperties.class, SecurityProperties.class })
 @AutoConfigureBefore(OpenApiAutoConfiguration.class)
 @ConditionalOnProperty(prefix = "application.swagger", name = "enabled", havingValue = "true")
@@ -103,7 +104,7 @@ public class SwaggerConfiguration {
 
 	@Configuration
 	@EnableConfigurationProperties(PaginationProperties.class)
-	@ConditionalOnClass(Pageable.class)
+	@ConditionalOnClass(value = {Pageable.class, PageableParameterBuilderPlugin.class})
 	@ConditionalOnProperty(prefix = "application.pagination", name = "enabled", havingValue = "true")
 	@ConditionalOnMissingBean(SwaggerPaginationCustomizer.class)
 	public static class ApiPaginationAutoConfiguration {
@@ -123,6 +124,7 @@ public class SwaggerConfiguration {
 	}
 
 	@Configuration
+	@ConditionalOnClass(Docket.class)
 	@EnableConfigurationProperties(SwaggerProperties.class)
 	@ConditionalOnProperty(prefix = "application.swagger.default-group", name = "enabled", havingValue = "true")
 	@ConditionalOnMissingBean(name = APPLICATION_API_DOCKET_BEAN_NAME)
@@ -147,7 +149,7 @@ public class SwaggerConfiguration {
 	}
 	
 	@Configuration
-	@ConditionalOnClass(name = "org.springframework.boot.actuate.web.mappings.MappingsEndpoint")
+	@ConditionalOnClass(name = "org.springframework.boot.actuate.web.mappings.MappingsEndpoint", value = Docket.class)
 	@ConditionalOnMissingBean(name = ACTUATOR_API_DOCKET_BEAN_NAME)
 	public static class ActuatorGroupAutoConfiguration {
 
@@ -160,5 +162,6 @@ public class SwaggerConfiguration {
 		}
 
 	}
+	
 	
 }

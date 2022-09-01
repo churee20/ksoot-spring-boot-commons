@@ -43,7 +43,6 @@ public class BootHelper {
 
     public static SpringApplication boot(SpringApplication application, final String[] args) {
         SpringProfiles.addDefaultProfile(application);
-        System.setProperty("web-application-type", application.getWebApplicationType().toString());
         Environment env = application.run(args).getEnvironment();
     	validateProfiles(env);
         logApplicationStartup(application.getWebApplicationType(), env);
@@ -129,7 +128,7 @@ public class BootHelper {
         		+ externalUrl + deploymentEnv + activeFeatures + enabledConfigurations;
         log.info(
                 "\n-------------------------------------------------------------------------------------------\n\t"
-                        + logInfo.toString()
+                        + logInfo
                         + "\n-------------------------------------------------------------------------------------------");
     }
 }

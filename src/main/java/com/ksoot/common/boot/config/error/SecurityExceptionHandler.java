@@ -16,6 +16,8 @@
 
 package com.ksoot.common.boot.config.error;
 
+import static com.ksoot.common.boot.BootConstant.BeanName.SECURITY_CONFIGURATION_BEAN_NAME;
+
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -41,7 +43,7 @@ import com.ksoot.common.error.resolver.GeneralErrorResolver;
 /**
  * @author Rajveer Singh
  */
-@Configuration
+@Configuration(value = SECURITY_CONFIGURATION_BEAN_NAME)
 @EnableConfigurationProperties(ProblemProperties.class)
 @Conditional(SecurityExceptionAdviceConfigurationCondition.class)
 @ConditionalOnClass(value = { WebSecurityConfiguration.class, ProblemHandling.class })

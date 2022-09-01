@@ -7,7 +7,7 @@ import com.ksoot.common.util.Buildable;
 
 public interface HeaderBuilder<T, R> extends Buildable<R> {
 	
-    String PREFIX = "X-app";
+    String PREFIX = "X-neosave";
 
     String INFO = PREFIX + "-Info";
 

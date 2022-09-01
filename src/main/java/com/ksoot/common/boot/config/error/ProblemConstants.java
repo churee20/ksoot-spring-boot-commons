@@ -28,12 +28,18 @@ public interface ProblemConstants {
 	String ERROR_DECRIPTION_FILE_NAME = "problem.html";
 
 	String ERROR_DECRIPTION_FILE = ERROR_DECRIPTION_FILE_URI + "/" + ERROR_DECRIPTION_FILE_NAME;
+	
+	String MISSING_SERVLET_REQUEST_PARAMETER_EXCEPTION_PREFIX = "missing.";
+	
+	String DATA_INTEGRITY_VIOLATION_EXCEPTION_PREFIX = "data.integrity.violation.";
 
 	public static interface Keys {
 
 		String MESSAGE = "message";
 
 		String LOCALIZED_MESSAGE = "localizedMessage";
+
+		String HTTP_METHOD = "method";
 
 		String TIMESTAMP = "timestamp";
 

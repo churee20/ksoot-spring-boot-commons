@@ -24,7 +24,6 @@ import javax.validation.ConstraintViolationException;
 
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -56,7 +55,6 @@ import reactor.core.publisher.Mono;
 @ConditionalOnProperty(prefix = "application.problem", name = "enabled", havingValue = "true")
 @ConditionalOnClass(ProblemHandling.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-@ConditionalOnMissingBean(name = WEB_EXCEPTION_HANDLER_BEAN_NAME)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Order(value = Ordered.LOWEST_PRECEDENCE)
 @ControllerAdvice

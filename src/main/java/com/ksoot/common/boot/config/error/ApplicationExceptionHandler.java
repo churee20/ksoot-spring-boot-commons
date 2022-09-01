@@ -16,6 +16,8 @@
 
 package com.ksoot.common.boot.config.error;
 
+import static com.ksoot.common.boot.BootConstant.BeanName.APPLICATION_EXCEPTION_HANDLER_BEAN_NAME;
+
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -37,7 +39,7 @@ import com.ksoot.common.error.ApplicationProblem;
 /**
  * @author Rajveer Singh
  */
-@Configuration
+@Configuration(value = APPLICATION_EXCEPTION_HANDLER_BEAN_NAME)
 @EnableConfigurationProperties(ProblemProperties.class)
 @ConditionalOnProperty(prefix = "application.problem", name = "enabled", havingValue = "true")
 @ConditionalOnClass(ProblemHandling.class)

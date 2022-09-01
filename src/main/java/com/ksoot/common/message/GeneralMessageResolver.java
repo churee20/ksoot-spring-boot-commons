@@ -26,7 +26,7 @@ public enum GeneralMessageResolver implements MessageResolver {
 	RECORD_UPDATED("record.updated.successfully", "Record updated successfully"),
 	RECORD_DELETED("record.deleted.successfully", "Record deleted successfully"),
 	NO_RECORDS_FOUND("no.records.found", "No records found matching selection criteria"),
-	NOT_FOUND("no.record.found", "No such record exists");
+	NO_RECORD_FOUND("no.record.found", "No such record exists");
 	// @formatter:on
 
 	private String messageCode;

@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.ksoot</groupId>
 		<artifactId>ksoot-spring-boot-parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
+		<relativePath />
 	</parent>
 	<!-- <groupId>com.ksoot</groupId> -->
 	<artifactId>ksoot-spring-boot-commons</artifactId>
@@ -14,6 +13,9 @@
 	<packaging>jar</packaging>
 	<name>ksoot-spring-boot-commons</name>
 	<description>Common Spring boot components to be used across projects</description>
+
+	<properties>
+	</properties>
 
 	<dependencies>
 		<dependency>
@@ -108,6 +110,16 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-r2dbc</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
 			<optional>true</optional>
@@ -194,10 +206,6 @@
 		<!-- <artifactId>nv-i18n</artifactId> -->
 		<!-- </dependency> -->
 		<!-- <dependency> -->
-		<!-- <groupId>org.zalando</groupId> -->
-		<!-- <artifactId>problem-spring-web-starter</artifactId> -->
-		<!-- <optional>true</optional> -->
-		<!-- </dependency> -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.module</groupId>
 			<artifactId>jackson-module-afterburner</artifactId>

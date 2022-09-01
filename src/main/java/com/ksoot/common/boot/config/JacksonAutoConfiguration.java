@@ -16,10 +16,6 @@
 
 package com.ksoot.common.boot.config;
 
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.zalando.problem.ProblemModule;
-import org.zalando.problem.violations.ConstraintViolationProblemModule;
-
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -27,6 +23,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClas
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.zalando.jackson.datatype.money.MoneyModule;
+import org.zalando.problem.ProblemModule;
+import org.zalando.problem.violations.ConstraintViolationProblemModule;
+
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 /**
  * @author Rajveer Singh
@@ -42,7 +43,7 @@ public class JacksonAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public JavaTimeModule javaTimeModule() {
+		JavaTimeModule javaTimeModule() {
 			return new JavaTimeModule();
 		}
 
@@ -55,7 +56,7 @@ public class JacksonAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public ProblemModule problemModule() {
+		ProblemModule problemModule() {
 			return new ProblemModule();
 		}
 
@@ -68,10 +69,21 @@ public class JacksonAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public ConstraintViolationProblemModule constraintViolationProblemModule() {
+		ConstraintViolationProblemModule constraintViolationProblemModule() {
 			return new ConstraintViolationProblemModule();
 		}
 
+	}
+
+	@Configuration
+	@ConditionalOnClass(MoneyModule.class)
+	public static class MoneyModuleConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		MoneyModule moneyModule() {
+			return new MoneyModule();
+		}
 	}
 
 }

@@ -19,6 +19,7 @@ package com.ksoot.common.boot.config.swagger;
 import static com.ksoot.common.boot.BootConstant.BeanName.SWAGGER_AUTO_CONFIGURATION_BEAN_NAME;
 
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -31,6 +32,7 @@ import com.ksoot.common.boot.config.security.SecurityProperties;
 import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
 import springfox.boot.starter.autoconfigure.OpenApiAutoConfiguration;
 import springfox.boot.starter.autoconfigure.SwaggerUiWebFluxConfiguration;
+import springfox.documentation.spring.web.SpringfoxWebFluxConfiguration;
 import springfox.documentation.swagger2.configuration.Swagger2DocumentationConfiguration;
 
 /**
@@ -43,6 +45,7 @@ import springfox.documentation.swagger2.configuration.Swagger2DocumentationConfi
  * @author Rajveer Singh
  */
 @Configuration(value = SWAGGER_AUTO_CONFIGURATION_BEAN_NAME)
+@ConditionalOnClass(SpringfoxWebFluxConfiguration.class)
 @EnableConfigurationProperties(value = { SwaggerProperties.class, SecurityProperties.class })
 @AutoConfigureBefore(OpenApiAutoConfiguration.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)

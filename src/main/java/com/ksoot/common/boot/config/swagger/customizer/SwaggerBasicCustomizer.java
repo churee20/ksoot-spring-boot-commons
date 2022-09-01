@@ -16,32 +16,28 @@
 
 package com.ksoot.common.boot.config.swagger.customizer;
 
+import static springfox.documentation.schema.AlternateTypeRules.newRule;
+
 import java.nio.ByteBuffer;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-
-import com.fasterxml.classmate.TypeResolver;
-import com.ksoot.common.boot.config.swagger.SwaggerProperties;
-import com.ksoot.common.error.ProblemResponse;
-
-import org.zalando.problem.Problem;
-import springfox.documentation.schema.AlternateTypeRule;
-import springfox.documentation.schema.WildcardType;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.Contact;
-import springfox.documentation.spring.web.plugins.Docket;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.core.Ordered;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.async.DeferredResult;
 
-import static springfox.documentation.schema.AlternateTypeRules.newRule;
+import com.fasterxml.classmate.TypeResolver;
+import com.ksoot.common.boot.config.swagger.SwaggerProperties;
+
+import springfox.documentation.schema.AlternateTypeRule;
+import springfox.documentation.schema.WildcardType;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Contact;
+import springfox.documentation.spring.web.plugins.Docket;
 
 /**
  * A swagger customizer to setup {@link Docket} settings.
@@ -79,9 +75,7 @@ public class SwaggerBasicCustomizer implements SwaggerCustomizer, Ordered {
 				.protocols(new HashSet<>(Arrays.asList(this.swaggerProperties.getProtocols()))).apiInfo(apiInfo)
 				.useDefaultResponseMessages(this.swaggerProperties.isUseDefaultResponseMessages())
 				.forCodeGeneration(true).directModelSubstitute(LocalDate.class, String.class)
-				.directModelSubstitute(ByteBuffer.class, String.class)
-				.directModelSubstitute(Problem.class, ProblemResponse.class)
-				.genericModelSubstitutes(ResponseEntity.class, List.class, Set.class)
+				.directModelSubstitute(ByteBuffer.class, String.class).genericModelSubstitutes(ResponseEntity.class)
 				.alternateTypeRules(newRule(
 						this.typeResolver.resolve(DeferredResult.class,
 								this.typeResolver.resolve(ResponseEntity.class, WildcardType.class)),

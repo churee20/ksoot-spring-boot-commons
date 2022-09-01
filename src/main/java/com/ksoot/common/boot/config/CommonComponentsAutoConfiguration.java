@@ -11,7 +11,6 @@ import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.context.MessageSourceProperties;
 import org.springframework.boot.autoconfigure.task.TaskExecutionProperties;
 import org.springframework.boot.autoconfigure.task.TaskSchedulingProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -21,7 +20,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 import org.springframework.orm.jpa.vendor.Database;
@@ -38,8 +36,8 @@ import com.ksoot.common.boot.util.ConfigRuntimeException;
 import com.ksoot.common.message.MessageProvider;
 
 @Configuration
-@EnableConfigurationProperties(
-		value = { TaskExecutionProperties.class, TaskSchedulingProperties.class, ProblemProperties.class })
+@EnableConfigurationProperties(value = { TaskExecutionProperties.class, TaskSchedulingProperties.class,
+		ProblemProperties.class })
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 public class CommonComponentsAutoConfiguration {
 
@@ -80,30 +78,6 @@ public class CommonComponentsAutoConfiguration {
 		return new CorsConfiguration();
 	}
 
-	@ConditionalOnMissingBean(value = MessageSourceProperties.class)
-	@Bean
-	@ConfigurationProperties(prefix = "spring.messages")
-	public MessageSourceProperties messageSourceProperties() {
-		return new MessageSourceProperties();
-	}
-
-	@ConditionalOnProperty(value = "application.external-config.messages.enabled", havingValue = "false",
-			matchIfMissing = true)
-	public static class ResourceBundleMessageSourceAutoConfiguration {
-
-		@ConditionalOnMissingBean(value = MessageSource.class)
-		@Bean
-		public MessageSource messageSource(final MessageSourceProperties properties) {
-			ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-			messageSource.setBasenames(properties.getBasename().split(","));
-			messageSource.setAlwaysUseMessageFormat(properties.isAlwaysUseMessageFormat());
-			messageSource.setFallbackToSystemLocale(properties.isFallbackToSystemLocale());
-			messageSource.setUseCodeAsDefaultMessage(properties.isUseCodeAsDefaultMessage());
-			return messageSource;
-		}
-
-	}
-
 	@ConditionalOnProperty(value = "application.problem.enabled", havingValue = "true")
 	@ConditionalOnClass(value = { ProblemHandling.class, Database.class })
 	public static class ConstraintNameResolverAutoConfiguration {
@@ -112,45 +86,47 @@ public class CommonComponentsAutoConfiguration {
 		@Bean
 		public ConstraintNameResolver constraintNameResolver(final Environment env) {
 			String dbPlateform = env.getProperty("spring.jpa.database");
-			if(StringUtils.isEmpty(dbPlateform)) {
-				throw new ConfigRuntimeException("Property \"spring.jpa.database\" not found. Please specify database plateform in configurations");
+			if (StringUtils.isEmpty(dbPlateform)) {
+				throw new ConfigRuntimeException(
+						"Property \"spring.jpa.database\" not found. Please specify database plateform in configurations");
 			}
 			Database database = Database.valueOf(dbPlateform);
 
-			switch(database) {
-			  	case SQL_SERVER:
-			  		return new SQLServerConstraintNameResolver();
-			  	case POSTGRESQL:
-				    return new PostgresConstraintNameResolver();
-			  	case MYSQL:
-				    return new MysqlConstraintNameResolver();
-			  	case ORACLE:
-				    return new OracleConstraintNameResolver();
-			  //TODO: Add more cases for other databases constraint name resolver implementations
-			  	default:
-			  		throw new IllegalStateException("constraintNameResolver bean could not be instantiated, "
-			  				+ "add ConstraintNameResolver implementaion for: " + database);
+			switch (database) {
+			case SQL_SERVER:
+				return new SQLServerConstraintNameResolver();
+			case POSTGRESQL:
+				return new PostgresConstraintNameResolver();
+			case MYSQL:
+				return new MysqlConstraintNameResolver();
+			case ORACLE:
+				return new OracleConstraintNameResolver();
+			// TODO: Add more cases for other databases constraint name resolver
+			// implementations
+			default:
+				throw new IllegalStateException("constraintNameResolver bean could not be instantiated, "
+						+ "add ConstraintNameResolver implementaion for: " + database);
 			}
 		}
 
 	}
-	
-    /*
-     * @Configuration
-     * 
-     * @ConditionalOnClass(JaxbAnnotationModule.class) public static class
-     * MappingJackson2XmlHttpMessageConverterConfiguration {
-     * 
-     * @ConditionalOnMissingBean(value =
-     * MappingJackson2XmlHttpMessageConverter.class)
-     * 
-     * @Bean public MappingJackson2XmlHttpMessageConverter
-     * mappingJackson2XmlHttpMessageConverter() { var jaxbAnnotationModule = new
-     * JaxbAnnotationModule(); var mappingJackson2XmlHttpMessageConverter = new
-     * MappingJackson2XmlHttpMessageConverter();
-     * mappingJackson2XmlHttpMessageConverter.getObjectMapper().registerModule(
-     * jaxbAnnotationModule); return mappingJackson2XmlHttpMessageConverter; } }
-     */
+
+	/*
+	 * @Configuration
+	 * 
+	 * @ConditionalOnClass(JaxbAnnotationModule.class) public static class
+	 * MappingJackson2XmlHttpMessageConverterConfiguration {
+	 * 
+	 * @ConditionalOnMissingBean(value =
+	 * MappingJackson2XmlHttpMessageConverter.class)
+	 * 
+	 * @Bean public MappingJackson2XmlHttpMessageConverter
+	 * mappingJackson2XmlHttpMessageConverter() { var jaxbAnnotationModule = new
+	 * JaxbAnnotationModule(); var mappingJackson2XmlHttpMessageConverter = new
+	 * MappingJackson2XmlHttpMessageConverter();
+	 * mappingJackson2XmlHttpMessageConverter.getObjectMapper().registerModule(
+	 * jaxbAnnotationModule); return mappingJackson2XmlHttpMessageConverter; } }
+	 */
 	// @Bean
 	// public Slf4jLogger.Level
 	// feignLoggerLevel(@Value("${application.feign-logging-level:NONE}") final

@@ -16,7 +16,7 @@
 
 package com.ksoot.common.boot.config.error;
 
-import static com.ksoot.common.boot.BootConstant.BeanName.APPLICATION_EXCEPTION_HANDLER_BEAN_NAME;
+import static com.ksoot.common.boot.BootConstant.BeanName.WEB_EXCEPTION_HANDLER_BEAN_NAME;
 
 import java.net.SocketTimeoutException;
 
@@ -24,7 +24,6 @@ import javax.validation.ConstraintViolationException;
 
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -46,12 +45,11 @@ import com.ksoot.common.error.resolver.GeneralErrorResolver;
 /**
  * @author Rajveer Singh
  */
-@Configuration(value = APPLICATION_EXCEPTION_HANDLER_BEAN_NAME)
+@Configuration(value = WEB_EXCEPTION_HANDLER_BEAN_NAME)
 @EnableConfigurationProperties(ProblemProperties.class)
 @ConditionalOnProperty(prefix = "application.problem", name = "enabled", havingValue = "true")
 @ConditionalOnClass(ProblemHandling.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@ConditionalOnMissingBean(name = APPLICATION_EXCEPTION_HANDLER_BEAN_NAME)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Order(value = Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice

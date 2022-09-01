@@ -56,17 +56,17 @@ public class ReactiveSecurityConfiguration {
 		this.problemSupport = problemSupport;
 	}
 
-	@Bean
-	public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
-		// @formatter:off
-		http.csrf().disable().authorizeExchange()
-				.pathMatchers("/swagger-resources/**", "/swagger-ui/**", "/v2/api-docs", "/webjars/**").permitAll()
-				.pathMatchers(this.properties.getUnsecuredUris()).permitAll()
-				.anyExchange().authenticated();
-		http.exceptionHandling()
-			.authenticationEntryPoint(this.problemSupport).accessDeniedHandler(this.problemSupport);
-		// @formatter:on
-		return http.build();
-	}
+    @Bean
+    SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+        // @formatter:off
+        http.csrf().disable().authorizeExchange()
+                .pathMatchers("/swagger-resources/**", "/swagger-ui/**", "/v2/api-docs", "/webjars/**").permitAll()
+                .pathMatchers(this.properties.getUnsecuredUris()).permitAll()
+                .anyExchange().authenticated();
+        http.exceptionHandling()
+                .authenticationEntryPoint(this.problemSupport).accessDeniedHandler(this.problemSupport);
+        // @formatter:on
+        return http.build();
+    }
 
 }

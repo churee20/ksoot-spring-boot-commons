@@ -201,7 +201,7 @@ public class EmailClient {
 		        	Resource imageFile = new ClassPathResource(fileName);
 	    	        Assert.isTrue(imageFile.exists(), "Attachment file: " + fileName+ " does not exist!");
 	    	        return imageFile;
-		        }).collect(Collectors.toList()).toArray(new Resource[fileNames.length]);
+		        }).toArray(size -> new Resource[fileNames.length]);
 			}
 	        return this;
 		}

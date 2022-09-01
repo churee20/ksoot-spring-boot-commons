@@ -16,14 +16,10 @@
 
 package com.ksoot.common.boot.config.error.reactive;
 
-import static com.ksoot.common.boot.BootConstant.BeanName.APPLICATION_EXCEPTION_HANDLER_BEAN_NAME;
-import static com.ksoot.common.boot.config.error.ProblemConstants.Keys.LOCALIZED_MESSAGE;
-import static com.ksoot.common.boot.config.error.ProblemConstants.Keys.MESSAGE;
-import static com.ksoot.common.boot.config.error.ProblemConstants.Keys.TIMESTAMP;
+import java.net.URI;
 
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -40,11 +36,15 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.server.ServerWebExchange;
 import org.zalando.problem.Problem;
 import org.zalando.problem.ProblemBuilder;
+import org.zalando.problem.Status;
 import org.zalando.problem.spring.webflux.advice.ProblemHandling;
 
+import com.ksoot.common.boot.config.error.ErrorBuilder;
+import com.ksoot.common.boot.config.error.ProblemConstants;
 import com.ksoot.common.boot.config.error.ProblemProperties;
 import com.ksoot.common.boot.config.error.db.ConstraintNameResolver;
 import com.ksoot.common.error.resolver.GeneralErrorResolver;
+import com.ksoot.common.error.resolver.GeneralTitleMessageResolver;
 import com.ksoot.common.message.MessageProvider;
 
 import reactor.core.publisher.Mono;
@@ -52,26 +52,27 @@ import reactor.core.publisher.Mono;
 /**
  * @author Rajveer Singh
  */
-@Configuration(value = APPLICATION_EXCEPTION_HANDLER_BEAN_NAME)
+@Configuration
 @EnableConfigurationProperties(ProblemProperties.class)
 @ConditionalOnProperty(prefix = "application.problem", name = "enabled", havingValue = "true")
 @ConditionalOnClass(value = { ProblemHandling.class, Database.class})
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-@ConditionalOnMissingBean(name = APPLICATION_EXCEPTION_HANDLER_BEAN_NAME)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Order(value = Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
 public class ReactiveORMExceptionHandler extends AbstractAdviceTrait {
 
-	private static final String DATA_INTEGRITY_VIOLATION_EXCEPTION_PREFIX = "data.integrity.violation.";
+	private ErrorBuilder errorBuilder;
 
 	private ReactiveProblemHelper problemHelper;
 
 	private ConstraintNameResolver constraintNameResolver;
 
-	public ReactiveORMExceptionHandler(final ReactiveProblemHelper problemHelper,
+	public ReactiveORMExceptionHandler(final ErrorBuilder errorBuilder, final ReactiveProblemHelper problemHelper,
 			@Nullable final ConstraintNameResolver constraintNameResolver) {
+		this.errorBuilder = errorBuilder;
 		this.problemHelper = problemHelper;
+		this.constraintNameResolver = constraintNameResolver;
 	}
 
 	@ExceptionHandler(DataIntegrityViolationException.class)
@@ -80,16 +81,14 @@ public class ReactiveORMExceptionHandler extends AbstractAdviceTrait {
 		if(this.constraintNameResolver == null) {
 			return create(exception, this.problemHelper.problemInstance(exception, this.problemHelper.requestUri(request)), request);
 		} else {
-			GeneralErrorResolver errorResolver = GeneralErrorResolver.DATA_INTEGRITY_VIOLATION_EXCEPTION;
+			GeneralTitleMessageResolver titleResolver = GeneralTitleMessageResolver.DATA_INTEGRITY_VIOLATION_EXCEPTION;
 	        String exMessage = exception.getMostSpecificCause().getMessage().trim();
 	        String constraintName = this.constraintNameResolver.resolveConstraintName(exception);
-			ProblemBuilder problemBuilder = Problem.builder()
-					.withInstance(this.problemHelper.requestUri(request))
-					.withStatus(errorResolver.status())
-					.with(MESSAGE, MessageProvider.getMessage(DATA_INTEGRITY_VIOLATION_EXCEPTION_PREFIX + constraintName, exMessage))
-					.with(LOCALIZED_MESSAGE,
-							MessageProvider.getMessage(DATA_INTEGRITY_VIOLATION_EXCEPTION_PREFIX + constraintName, exMessage))
-					.with(TIMESTAMP, this.problemHelper.time());
+			URI requestUri = this.problemHelper.requestUri(request);
+			ProblemBuilder problemBuilder = this.errorBuilder.problemBuilder(MessageProvider.getMessage(titleResolver),
+					requestUri, this.errorBuilder.generateType(requestUri, "data-integrity-violation"),
+					Status.INTERNAL_SERVER_ERROR, exception.getMessage(), MessageProvider.getMessage(
+							ProblemConstants.DATA_INTEGRITY_VIOLATION_EXCEPTION_PREFIX + constraintName, exMessage));
 			this.problemHelper.addDebugInfo(problemBuilder, exception);
 			return create(exception, problemBuilder.build(), request);
 		}

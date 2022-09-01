@@ -46,6 +46,7 @@ import com.ksoot.common.boot.config.swagger.SwaggerAutoConfiguration;
 public class PaginationAutoConfiguration {
 
 	@Configuration
+	@ConditionalOnClass(Pageable.class)
 	@EnableConfigurationProperties(PaginationProperties.class)
 	@AutoConfigureAfter(SwaggerAutoConfiguration.class)
 	public static class PageAssemblerConfiguration {

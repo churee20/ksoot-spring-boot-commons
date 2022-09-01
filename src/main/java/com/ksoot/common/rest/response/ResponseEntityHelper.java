@@ -16,7 +16,7 @@
 
 package com.ksoot.common.rest.response;
 
-import static com.ksoot.common.message.GeneralMessageResolver.NOT_FOUND;
+import static com.ksoot.common.message.GeneralMessageResolver.NO_RECORD_FOUND;
 import static com.ksoot.common.message.MessageProvider.getMessage;
 
 import java.net.URI;
@@ -169,7 +169,7 @@ public class ResponseEntityHelper {
 			PaginatedResourceAssembler pageAssembler = DefaultBeanRegistry.getPageAssembler();
 			org.springframework.http.ResponseEntity.BodyBuilder bodyBuilder = ResponseEntity.status(this.status);
 			if(this.body.isEmpty()) {
-				super.addHeader(this.status == HttpStatus.NOT_FOUND ? ERROR : INFO, getMessage(NOT_FOUND));
+				super.addHeader(this.status == HttpStatus.NOT_FOUND ? ERROR : INFO, getMessage(NO_RECORD_FOUND));
 			}
 			if(this.headers != null) {
 				bodyBuilder.headers(this.headers);

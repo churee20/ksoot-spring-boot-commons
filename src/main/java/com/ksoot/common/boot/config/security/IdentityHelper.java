@@ -18,7 +18,6 @@ package com.ksoot.common.boot.config.security;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
@@ -36,70 +35,65 @@ import lombok.Value;
 @Value
 public class IdentityHelper {
 
-    public enum ATTRIBUTE_NAME {
+	public enum ATTRIBUTE_NAME {
 
-        //@formatter:off
+		//@formatter:off
 	    PREFERRED_USERNAME("preferred_username");
 		//@formatter:on
 
-        private final String value;
+		private final String value;
 
-        private ATTRIBUTE_NAME(final String value) {
-            this.value = value;
-        }
+		private ATTRIBUTE_NAME(final String value) {
+			this.value = value;
+		}
 
-        public String value() {
-            return this.value;
-        }
-    }
+		public String value() {
+			return this.value;
+		}
+	}
 
-    private IdentityHelper() {
-        // This class is not supposed to be instantiated
-    }
-   
-    public static String getLoginName() {
-    	SecurityContext securityContext = SecurityContextHolder.getContext();
-	    Authentication authentication = securityContext.getAuthentication();
-	    if (authentication != null) {
-	    	return authentication.getName();
-	    }
-	    else {
-	    	throw new InsufficientAuthenticationException("Authentication required");
-	    }
-    }
+	private IdentityHelper() {
+		// This class is not supposed to be instantiated
+	}
 
-    public static String getAuditUserId() {
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        Authentication authentication = securityContext.getAuthentication();
-        if (authentication != null) {
-            return authentication.getName();
-        }
-        else {
-            return CommonConstant.SYSTEM_USER;
-        }
-    }
-    
-    public static Principal getPrinciple() {
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        Authentication authentication = securityContext.getAuthentication();
-        if (authentication != null && authentication.getPrincipal() != null) {
-            return (Principal) authentication.getPrincipal();
-        }
-        else {
-            throw new InsufficientAuthenticationException("Authentication required");
-        }
-    }
+	public static String getLoginName() {
+		SecurityContext securityContext = SecurityContextHolder.getContext();
+		Authentication authentication = securityContext.getAuthentication();
+		if (authentication != null) {
+			return authentication.getName();
+		} else {
+			throw new InsufficientAuthenticationException("Authentication required");
+		}
+	}
 
-    public static List<String> getRoles() {
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        Authentication authentication = securityContext.getAuthentication();
-        if (authentication != null) {
-            return authentication.getAuthorities().stream()
-            		.map(GrantedAuthority::getAuthority).collect(Collectors.toList());
-        }
-        else {
-            throw new InsufficientAuthenticationException("Authentication required");
-        }
-    }
+	public static String getAuditUserId() {
+		SecurityContext securityContext = SecurityContextHolder.getContext();
+		Authentication authentication = securityContext.getAuthentication();
+		if (authentication != null) {
+			return authentication.getName();
+		} else {
+			return CommonConstant.SYSTEM_USER;
+		}
+	}
+
+	public static Principal getPrinciple() {
+		SecurityContext securityContext = SecurityContextHolder.getContext();
+		Authentication authentication = securityContext.getAuthentication();
+		if (authentication != null && authentication.getPrincipal() != null) {
+			return (Principal) authentication.getPrincipal();
+		} else {
+			throw new InsufficientAuthenticationException("Authentication required");
+		}
+	}
+
+	public static List<String> getRoles() {
+		SecurityContext securityContext = SecurityContextHolder.getContext();
+		Authentication authentication = securityContext.getAuthentication();
+		if (authentication != null) {
+			return authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+		} else {
+			throw new InsufficientAuthenticationException("Authentication required");
+		}
+	}
 
 }

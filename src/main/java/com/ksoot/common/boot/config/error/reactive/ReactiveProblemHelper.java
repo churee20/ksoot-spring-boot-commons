@@ -16,18 +16,12 @@
 
 package com.ksoot.common.boot.config.error.reactive;
 
-import static com.ksoot.common.boot.config.error.ProblemConstants.Keys.FIELD_ERRORS;
-import static com.ksoot.common.boot.config.error.ProblemConstants.Keys.VIOLATIONS;
-
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.validation.ConstraintViolationException;
 
-import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.server.ResponseStatusException;
@@ -38,10 +32,10 @@ import org.zalando.problem.Status;
 import org.zalando.problem.spring.webflux.advice.AdviceTrait;
 
 import com.ksoot.common.boot.config.error.AbstractProblemHelper;
+import com.ksoot.common.boot.config.error.ErrorBuilder;
 import com.ksoot.common.boot.config.error.FieldErrorVM;
 import com.ksoot.common.boot.config.error.ProblemProperties;
 import com.ksoot.common.boot.config.error.ViolationVM;
-import com.ksoot.common.boot.config.error.db.ConstraintNameResolver;
 import com.ksoot.common.error.ApplicationException;
 import com.ksoot.common.error.ApplicationProblem;
 import com.ksoot.common.error.resolver.ErrorResolver;
@@ -54,38 +48,30 @@ import reactor.core.publisher.Mono;
  */
 public class ReactiveProblemHelper extends AbstractProblemHelper implements AdviceTrait {
 
-	public ReactiveProblemHelper(final Environment env,
-			final ProblemProperties properties,
-			@Nullable final ConstraintNameResolver constraintNameResolver) {
-		super(env.getProperty("spring.webflux.base-path"), properties);
+	public ReactiveProblemHelper(final ErrorBuilder errorBuilder, final ProblemProperties properties) {
+		super(errorBuilder, properties);
 	}
 
 	Mono<ResponseEntity<Problem>> createProblem(final ErrorResolver errorResolver, final Throwable exception,
 			final ServerWebExchange request) {
-		ProblemBuilder problemBuilder = problemBuilder(errorResolver, requestUri(request));
-		problemBuilder.withType(generateType(requestUri(request), errorResolver.typeCode()));
+		ProblemBuilder problemBuilder = this.errorBuilder.problemBuilder(errorResolver, requestUri(request));
 		addDebugInfo(problemBuilder, exception);
 		return create(exception, problemBuilder.build(), request);
 	}
 
 	Mono<ResponseEntity<Problem>> createProblem(final ApplicationProblem problem, final ServerWebExchange request) {
 		ErrorResolver errorResolver = problem.getErrorResolver();
-		ProblemBuilder problemBuilder = errorResolver != null ?
-				problemBuilder(errorResolver, requestUri(request))
-				: problemBuilder(problem.getTitle(), requestUri(request), 
-						problem.getStatus(), problem.getMessage(), 
-						problem.getLocalizedMessage(), time());
-		problemBuilder.withType(errorResolver != null ? generateType(requestUri(request), 
-				errorResolver.typeCode()) 
-				: problem.getType());
+		ProblemBuilder problemBuilder = errorResolver != null
+				? this.errorBuilder.problemBuilder(errorResolver, requestUri(request))
+				: this.errorBuilder.problemBuilder(problem.getTitle(), requestUri(request), problem.getType(),
+						problem.getStatus(), problem.getMessage(), problem.getLocalizedMessage());
 		addDebugInfo(problemBuilder, problem);
 		return create(problem, problemBuilder.build(), request);
 	}
 
 	Mono<ResponseEntity<Problem>> createProblem(final ApplicationException exception, final ServerWebExchange request) {
 		ErrorResolver errorResolver = exception.getErrorResolver();
-		ProblemBuilder problemBuilder = problemBuilder(errorResolver, requestUri(request));
-		problemBuilder.withType(generateType(requestUri(request), errorResolver.typeCode()));
+		ProblemBuilder problemBuilder = this.errorBuilder.problemBuilder(errorResolver, requestUri(request));
 		addDebugInfo(problemBuilder, exception);
 		return create(exception, problemBuilder.build(), request);
 	}
@@ -93,11 +79,10 @@ public class ReactiveProblemHelper extends AbstractProblemHelper implements Advi
 	Mono<ResponseEntity<Problem>> createProblem(final ConstraintViolationException exception,
 			final ServerWebExchange request) {
 		ErrorResolver errorResolver = GeneralErrorResolver.CONSTRAINT_VIOLATIONS;
-		ProblemBuilder problemBuilder = problemBuilder(errorResolver, requestUri(request));
-		problemBuilder.withType(generateType(requestUri(request), errorResolver.typeCode()));
-		List<ViolationVM> violations = exception.getConstraintViolations().stream().map(voilation -> ViolationVM.of(properties, voilation))
-				.collect(Collectors.toList());
-		problemBuilder.with(VIOLATIONS, violations);
+		ProblemBuilder problemBuilder = this.errorBuilder.problemBuilder(errorResolver, requestUri(request));
+		List<ViolationVM> violations = exception.getConstraintViolations().stream()
+				.map(voilation -> ViolationVM.of(properties, voilation)).toList();
+		this.errorBuilder.addViolations(problemBuilder, violations);
 		addDebugInfo(problemBuilder, exception);
 		return create(exception, problemBuilder.build(), request);
 	}
@@ -105,13 +90,13 @@ public class ReactiveProblemHelper extends AbstractProblemHelper implements Advi
 	Mono<ResponseEntity<Problem>> createProblem(final WebExchangeBindException exception,
 			final ServerWebExchange request) {
 		ErrorResolver errorResolver = GeneralErrorResolver.VALIDATION_FAILURE;
-		ProblemBuilder problemBuilder = problemBuilder(errorResolver, requestUri(request));
+		ProblemBuilder problemBuilder = this.errorBuilder.problemBuilder(errorResolver, requestUri(request));
 
 		BindingResult result = exception.getBindingResult();
-		List<FieldErrorVM> fieldErrors = result.getFieldErrors().stream().map(fieldError -> FieldErrorVM.of(properties, fieldError))
-				.collect(Collectors.toList());
+		List<FieldErrorVM> fieldErrors = result.getFieldErrors().stream()
+				.map(fieldError -> FieldErrorVM.of(properties, fieldError)).toList();
 
-		problemBuilder.withType(generateType(requestUri(request), errorResolver.typeCode())).with(FIELD_ERRORS, fieldErrors);
+		this.errorBuilder.addFieldErrors(problemBuilder, fieldErrors);
 		addDebugInfo(problemBuilder, exception);
 		return create(exception, problemBuilder.build(), request);
 	}
@@ -128,9 +113,11 @@ public class ReactiveProblemHelper extends AbstractProblemHelper implements Advi
 	Mono<ResponseEntity<Problem>> createProblem(final ResponseStatusException exception,
 			final ServerWebExchange request) {
 		ErrorResolver errorResolver = GeneralErrorResolver.RESPONSE_STATUS_EXCEPTION;
-		ProblemBuilder problemBuilder = problemBuilder(errorResolver.title(),
-				requestUri(request), Status.valueOf(exception.getRawStatusCode()), errorResolver.message(), 
-				errorResolver.localizedMessage(), time());
+		URI requestUri = requestUri(request);
+		ProblemBuilder problemBuilder = this.errorBuilder.problemBuilder(errorResolver.title(), requestUri,
+				this.errorBuilder.generateType(requestUri, errorResolver.typeCode()),
+				Status.valueOf(exception.getRawStatusCode()), errorResolver.message(),
+				errorResolver.localizedMessage());
 		addDebugInfo(problemBuilder, exception);
 		return create(exception, problemBuilder.build(), request);
 	}
